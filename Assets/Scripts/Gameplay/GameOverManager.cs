@@ -26,6 +26,7 @@ public class GameOverManager : MonoBehaviour
 
     [Header("Animation Settings")]
     public float animDuration = 1.0f;
+    private AudioLowPassFilter bgmLowPassFilter;
 
     public AudioClip deadSound;
     
@@ -81,6 +82,8 @@ public class GameOverManager : MonoBehaviour
 
         float currentSFXVol = PlayerPrefs.GetFloat("SFXVolume", 0.75f);
         GameManager.instance.sfxAudioSource.PlayOneShot(deadSound, currentSFXVol);
+
+        AudioManager.instance.TriggerGameOverFilter(true);
 
         achievedScore = finalScore;
         finalScoreText.text = "FINAL SCORE: " + achievedScore; // Tampilkan final score

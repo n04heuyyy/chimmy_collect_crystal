@@ -4,18 +4,16 @@ using System.Collections;
 
 public class ScoreManager : MonoBehaviour
 {
-    public static ScoreManager instance { get; private set; } // Instansi agar dapat digunakan skrip lain
+    public static ScoreManager instance { get; private set; }
     public TextMeshProUGUI scoreText;
     private int currentScore = 0;
 
     void Awake()
     {
-        // Set referensi ke dirinya sendiri
         if (instance == null) instance = this;
-        else Destroy(gameObject); // Hancurkan duplikat jika ada
+        else Destroy(gameObject);
     }
 
-    // Ambil skor (digunakan GameManager)
     public int GetScore()
     {
         return currentScore;
@@ -25,14 +23,11 @@ public class ScoreManager : MonoBehaviour
     {
         currentScore += points;
         scoreText.text = "Score: " + currentScore;
-
-        // Pastikan kita mengambil parent (kotak skor) untuk dianiamsikan
         Transform target = scoreText.transform.parent;
-        // Jalankan animasi
         StartCoroutine(PopAnimation(scoreText.transform.parent, 1.2f));
     }
 
-    public IEnumerator PopAnimation(Transform target, float scaleAmount) // Animasi pop kotak skor
+    public IEnumerator PopAnimation(Transform target, float scaleAmount)
     {
         if (target == null) yield break;
         float duration = 0.2f; 
@@ -48,7 +43,6 @@ public class ScoreManager : MonoBehaviour
             yield return null;
         }
         
-        // Paksa kembali ke posisi awal
         target.localScale = Vector3.one;
     }
 }

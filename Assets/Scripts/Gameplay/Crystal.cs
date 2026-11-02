@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class Crystal : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class Crystal : MonoBehaviour
     [Header("Visual & Audio")]
     public GameObject explosionEffect;
     public AudioClip collectSound;
+    public GameObject templateFloatingText;
 
     void Start()
     {
@@ -63,6 +65,13 @@ public class Crystal : MonoBehaviour
             ScoreManager.instance.AddScore(points); // Tambahkan ke skor total
 
             HandleEffects(); 
+
+            if (GameManager.instance != null)
+            {
+                // Floating teks jumlah poin yang didapat di atas kristal
+                GameManager.instance.ShowFloatingTextAt(transform.position, points);
+            }
+
             // Lalu spawner menghitung jumlah kristal diambil
             if (SpawnerManager.instance != null) SpawnerManager.instance.AddCrystalCount();
 
@@ -78,11 +87,9 @@ public class Crystal : MonoBehaviour
             GameObject effect = Instantiate(explosionEffect, transform.position, Quaternion.identity);
         }
 
-        if (collectSound != null && GameManager.instance != null && GameManager.instance.sfxAudioSource != null)
+        if (AudioManager.instance != null)
         {
-            // Ambil volume SFX dari slider di menu dan putar
-            float currentSFXVol = PlayerPrefs.GetFloat("SFXVolume", 0.75f);
-            GameManager.instance.sfxAudioSource.PlayOneShot(collectSound, currentSFXVol);
+            AudioManager.instance.PlaySFXPitched(collectSound);
         }
     }
     IEnumerator LifetimeRoutine()
@@ -114,4 +121,5 @@ public class Crystal : MonoBehaviour
         // Mode classic hanya boleh 1 kristal per tipe yang muncul
         if (manager != null) manager.NotifyItemDestroyed(myType);
     }
+
 }

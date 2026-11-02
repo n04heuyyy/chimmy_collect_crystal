@@ -7,7 +7,7 @@ public class MusicManager : MonoBehaviour
 
     void Start()
     {
-        // Menggunakan Audi Source dengan output musik bgm
+        // Menggunakan Audio Source dengan output musik bgm
         bgm = GetComponent<AudioSource>();
         StartCoroutine(PlayMusicWithDelay());
     }

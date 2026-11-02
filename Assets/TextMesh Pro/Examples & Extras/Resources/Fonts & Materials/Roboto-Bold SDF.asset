@@ -190,9 +190,9 @@ MonoBehaviour:
   m_FontFeatureTable:
     m_MultipleSubstitutionRecords: []
     m_LigatureSubstitutionRecords:
-    - m_ComponentGlyphIDs: 2c000000ad000000
+    - m_ComponentGlyphIDs: 2c000000ad000000u
       m_LigatureGlyphID: 1196
-    - m_ComponentGlyphIDs: 34000000a9000000
+    - m_ComponentGlyphIDs: 34000000a9000000u
       m_LigatureGlyphID: 1209
     m_GlyphPairAdjustmentRecords:
     - m_FirstAdjustmentRecord:
