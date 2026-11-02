@@ -1,8 +1,9 @@
 # Update 2.0: Euyskuyyy Polishing Package kicked in, yo!
-Chimmy Collect Crystal on Unity by EUYSKUYYY
-Solo developed by Nathanael Noah Purwoadi
+Chimmy Collect Crystal on Unity by EUYSKUYYY!
 
-Chimmy Collect Crystal is a game where you collect crystals and avoiding dlying cats.
+Solo developed by Nathanael Noah Purwoadi (n04heuyyy)
+
+Chimmy Collect Crystal is a game where you collect crystals and avoiding flying cats.
 Based on my old Scratch game: https://scratch.mit.edu/projects/855597601/ , now remade in Unity.
 
 # Key Mechanics
@@ -21,7 +22,7 @@ Contains these polishing stuff:
 * Low pass filter on game over
 * Buttons are also JUICED with animations
 * Item text now pulses
-* Background now has zoom in/out effect for incresed liveliness
+* Background now has zoom in/out effect to improve liveliness
 * Some UI stuff updated
 * Dust particles appear when moving
 * Pop-up score text when collecting crystals
