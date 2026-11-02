@@ -18,12 +18,15 @@ public class GameManager : MonoBehaviour
 
     public GameObject enemyPrefab;
 
+    public GameObject templateFloatingText;
+
     void Awake() { instance = this; }
 
     void Start()
     {
         // Pastikan game tetap jalan meskipun window kehilangan fokus
         Application.runInBackground = true;
+        PlayerController.isGameOverActive = false;
         StartCoroutine(StartingRoutine()); // Intro 5 detik
         SpawnEnemies(); // Munculkan musuh
     }
@@ -110,13 +113,41 @@ public class GameManager : MonoBehaviour
 
     public void CallGameOver()
     {
-        // Ambil skor akhir dari ScoreManager dan total kristal dari SpawnerManager
-        int finalScore = ScoreManager.instance.GetScore();
-        int totalCrystals = SpawnerManager.instance.GetCrystals();
-        // Jalankan proses game over
-        gameOverManager.TriggerGameOver(finalScore, totalCrystals);
+        // Skala waktu dinormalkan
+        Time.timeScale = 1f;
 
-        if (ItemUIManager.instance != null) ItemUIManager.instance.ForceHideUIBox(); // Paksa UI item sembunyi
+        // Semua getaran off
+        if (WorldShake.instance != null)
+        {
+            WorldShake.instance.StopAllCoroutines();
+            WorldShake.instance.transform.localPosition = Vector3.zero;
+        }
+
+        // Player hilang
+        if (player != null)
+        {
+            player.canMove = false;
+            PlayerController.isGameOverActive = true;
+
+            // Hilangkan sprite player agar tampak lenyap
+            SpriteRenderer sr = player.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                sr.enabled = false;
+            }
+            Collider2D col = player.GetComponent<Collider2D>();
+            if (col != null) col.enabled = false;
+        }
+
+        // Game Over UI
+        if (gameOverManager != null)
+        {
+            int finalScore = ScoreManager.instance != null ? ScoreManager.instance.GetScore() : 0;
+            int totalCrystals = SpawnerManager.instance != null ? SpawnerManager.instance.GetCrystals() : 0;
+            gameOverManager.TriggerGameOver(finalScore, totalCrystals);
+        }
+
+        if (ItemUIManager.instance != null) ItemUIManager.instance.ForceHideUIBox();
     }
 
     // Animasi teks EUYYY! yang membesar lalu hilang
@@ -148,5 +179,55 @@ public class GameManager : MonoBehaviour
             }
             yield return null;
         }
+    }
+    public void ShowFloatingTextAt(Vector3 worldPos, int pointValue)
+    {
+        if (templateFloatingText != null && templateFloatingText.transform.parent != null)
+        {
+            GameObject cloneObj = Instantiate(templateFloatingText, templateFloatingText.transform.parent);
+            cloneObj.SetActive(true);
+            
+            TMP_Text tmp = cloneObj.GetComponent<TMP_Text>();
+            if (tmp != null) tmp.text = "+" + pointValue;
+
+            RectTransform canvasRect = templateFloatingText.transform.parent.GetComponent<RectTransform>();
+            Vector2 screenPoint = Camera.main.WorldToScreenPoint(worldPos);
+            Vector2 localPoint;
+
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPoint, null, out localPoint))
+            {
+                StartCoroutine(FloatTextRoutine(cloneObj, localPoint));
+            }
+        }
+    }
+
+    IEnumerator FloatTextRoutine(GameObject txtObj, Vector2 startAnchoredPos)
+    {
+        float elapsed = 0f;
+        float duration = 0.8f;
+        RectTransform rect = txtObj.GetComponent<RectTransform>();
+        TMP_Text txt = txtObj.GetComponent<TMP_Text>();
+        Color startColor = txt != null ? txt.color : Color.white;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = elapsed / duration;
+
+            if (rect != null)
+            {
+                rect.anchoredPosition = startAnchoredPos + new Vector2(0, t * 80f);
+            }
+
+            if (txt != null)
+            {
+                Color c = startColor;
+                c.a = Mathf.Lerp(1f, 0f, t);
+                txt.color = c;
+            }
+
+            yield return null;
+        }
+        Destroy(txtObj);
     }
 }

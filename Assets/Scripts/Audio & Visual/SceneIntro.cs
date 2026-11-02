@@ -4,7 +4,7 @@ using System.Collections;
 
 public class SceneIntro : MonoBehaviour
 {
-    private Image fadeImage; // Menggunakan image kosong hitam yang diubah transparansinya
+    public Image fadeImage; // Menggunakan image kosong hitam yang diubah transparansinya
 
     void Awake()
     {

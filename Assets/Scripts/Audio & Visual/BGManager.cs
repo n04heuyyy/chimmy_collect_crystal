@@ -27,6 +27,23 @@ public class BGManager : MonoBehaviour
         StartCoroutine(BackgroundCycle());
     }
 
+    void Update()
+    {
+        float baseScale = 1.15f; 
+        float scaleAnim = baseScale + Mathf.Sin(Time.time * 0.5f) * 0.04f; 
+
+        // Zoom halus layer background agar hidup
+        if (imageLayer1 != null)
+        {
+            imageLayer1.transform.localScale = new Vector3(scaleAnim, scaleAnim, 1f);
+        }
+        
+        if (imageLayer2 != null)
+        {
+            imageLayer2.transform.localScale = new Vector3(scaleAnim, scaleAnim, 1f);
+        }
+    }
+
     IEnumerator BackgroundCycle()
     {
         while (true)

@@ -12,6 +12,10 @@ public class PlayerController : MonoBehaviour
     public float padding = 1f;
     public bool canMove = false; // Player mulai dalam keadaan diam
     private Vector3 lastPosition;
+    private Vector3 originalScale;
+    private float previousXPosition;
+    [Header("Particle Effects")]
+    public ParticleSystem speedDustParticle; 
     
     [Header("Player HP")]
     public float health = 20f;
@@ -25,6 +29,8 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer playerSR;
     private Camera mainCam;
 
+    public static bool isGameOverActive = false;
+
     void Awake()
     {
         if (instance == null) instance = this;
@@ -36,6 +42,8 @@ public class PlayerController : MonoBehaviour
         mainCam = Camera.main;
         playerSR = GetComponent<SpriteRenderer>();
         lastPosition = transform.position;
+        previousXPosition = transform.position.x;
+        originalScale = transform.localScale;
         string mode = PlayerPrefs.GetString("GameMode", "classic").ToLower();
 
         if (PlayerPrefs.GetInt("OneHitKO", 0) == 1) 
@@ -47,6 +55,7 @@ public class PlayerController : MonoBehaviour
         health = maxHealth;
         UpdateHealthUI();
     }
+
     public int GetCurrentHP()
     {
         return Mathf.CeilToInt(health); // Ambil HP saat ini
@@ -54,6 +63,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (isGameOverActive || !canMove) return;
+        
         if (canMove && Mouse.current != null)
         {
             // 1. Ambil posisi mouse
@@ -95,6 +106,35 @@ public class PlayerController : MonoBehaviour
                     
                     // Update arah hadap kiri/kanan
                     UpdateFlip(targetPos);
+                    float frameSpeed = Vector3.Distance(transform.position, targetPos) / Time.deltaTime;
+                    if (speedDustParticle != null)
+                    {
+                        var emission = speedDustParticle.emission;
+                        bool isMoving = canMove && (frameSpeed > 0.5f);
+                        emission.enabled = isMoving;
+
+                        // Pastikan partikel aktif emit kalau bergerak
+                        if (isMoving)
+                        {
+                            if (!speedDustParticle.isPlaying)
+                            {
+                                speedDustParticle.Play();
+                            }
+
+                            // Rotasi Y (kiri/kanan) mengikuti flip player
+                            Vector3 rot = speedDustParticle.transform.localEulerAngles;
+                            if (playerSR.flipX) rot.y = 180f;
+                            else rot.y = 0f;
+                            speedDustParticle.transform.localEulerAngles = rot;
+                        }
+                        else
+                        {
+                            if (speedDustParticle.isPlaying)
+                            {
+                                speedDustParticle.Stop();
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -117,13 +157,17 @@ public class PlayerController : MonoBehaviour
     // Balik sprite kiri/kanan tergantung arah gerak pointer
     void UpdateFlip(Vector3 targetPos)
     {
-        if (targetPos.x > transform.position.x + 0.01f)
+        float directionX = targetPos.x - transform.position.x;
+        if (Mathf.Abs(directionX) > 0.01f)
         {
-            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1);
-        }
-        else if (targetPos.x < transform.position.x - 0.01f)
-        {
-            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, 1);
+            if (directionX < 0)
+            {
+                if (playerSR != null) playerSR.flipX = true;
+            }
+            else if (directionX > 0)
+            {
+                if (playerSR != null) playerSR.flipX = false;
+            }
         }
     }
 
@@ -178,14 +222,28 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        StartCoroutine(JuiceEffects.DoHitStop(0.08f));
+
         health -= 20f * Time.deltaTime; // Nyawa berkurang sebanyak 20/detik
         playerSR.color = Color.red; // Selama terkena damage, ubah sprite jadi merah
         UpdateHealthUI();
 
+        if (WorldShake.instance != null)
+        {
+            WorldShake.instance.TriggerShake(0.12f, 0.15f);
+        }     
+
         if (health <= 0) // Game over ketika HP 0
         {
             health = 0;
+            canMove = false;
+            if (playerSR != null) 
+            {
+                playerSR.color = Color.white; // Paksa warna kembali normal, jangan biarkan nyangkut di warna merah!
+                playerSR.enabled = true;      // Pastikan sprite tetap aktif terlihat
+            }
             if (GameManager.instance != null)GameManager.instance.CallGameOver();
+            return;
         }
     }
     public void ModifyHP(int amount) // Tambah/kurang HP dari item
@@ -198,7 +256,7 @@ public class PlayerController : MonoBehaviour
         if (health <= 0)
         {
             health = 0;
-           if (GameManager.instance != null) GameManager.instance.CallGameOver();
+            if (GameManager.instance != null) GameManager.instance.CallGameOver();
         }
     }
 
@@ -226,4 +284,6 @@ public class PlayerController : MonoBehaviour
         }
         healthText.color = (health <= 5) ? Color.red : Color.black; // Jika nyawa 5 ke bawah, buat merah
     }
+
+    
 }
