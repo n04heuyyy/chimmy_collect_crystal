@@ -8,6 +8,6 @@ public static class JuiceEffects
     {
         Time.timeScale = 0.0f; // Time Freeze
         yield return new WaitForSecondsRealtime(duration);
-        Time.timeScale = 1.0f; // Kembali normal
+        Time.timeScale = 1f; // Kembali normal
     }
 }

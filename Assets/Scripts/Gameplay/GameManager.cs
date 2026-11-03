@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     public AudioClip startSound1; // Ini buat suara intro 4 detik
     public AudioClip startSound2; // Lalu 1 detik audio EUYYY
     public TMP_Text introCountdownText;
+    public AudioSource bgmNormal; // Ada 2 buah bgm untuk low pass filter effect
+    public AudioSource bgmMuffled; // Yang ini low pass'd dan ditrigger ketika game over
 
     public GameObject enemyPrefab;
 
@@ -52,6 +54,21 @@ public class GameManager : MonoBehaviour
             introCountdownText.gameObject.SetActive(true);
             // Selama 1 detik itu, juga mainkan animasi teks intro
             yield return StartCoroutine(AnimateGoTextRoutine(1f));
+        }
+
+        float targetBGMVol = PlayerPrefs.GetFloat("BGMVolume", 0.75f);
+
+        if (bgmNormal != null)
+        {
+            bgmNormal.time = 0f;         
+            bgmNormal.volume = targetBGMVol; 
+            bgmNormal.Play();
+        }
+        if (bgmMuffled != null)
+        {
+            bgmMuffled.time = 0f;        
+            bgmMuffled.volume = 0f;     
+            bgmMuffled.Play();
         }
 
         // Baru boleh gerak sekarang
@@ -122,12 +139,23 @@ public class GameManager : MonoBehaviour
             WorldShake.instance.StopAllCoroutines();
             WorldShake.instance.transform.localPosition = Vector3.zero;
         }
+        
+        Lowpass(true);
 
         // Player hilang
         if (player != null)
         {
             player.canMove = false;
             PlayerController.isGameOverActive = true;
+
+            ParticleSystem dust = player.GetComponentInChildren<ParticleSystem>();
+            if (dust != null)
+            {
+                dust.Stop();
+                dust.Clear(); // Bersihkan partikel yang sedang melayang di layar
+                var emission = dust.emission;
+                emission.enabled = false;
+            }
 
             // Hilangkan sprite player agar tampak lenyap
             SpriteRenderer sr = player.GetComponent<SpriteRenderer>();
@@ -229,5 +257,23 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
         Destroy(txtObj);
+    }
+
+    public void Lowpass(bool isGameOverActive)
+    {
+        float bgmVol = PlayerPrefs.GetFloat("BGMVolume", 0.75f);
+
+        if (isGameOverActive)
+        {
+            // Suara normal dimatikan, suara teredam dinyalakan
+            if (bgmNormal != null) bgmNormal.volume = 0f;
+            if (bgmMuffled != null) bgmMuffled.volume = bgmVol;
+        }
+        else
+        {
+            // Normal menyala kembali, teredam dimatikan
+            if (bgmNormal != null) bgmNormal.volume = bgmVol;
+            if (bgmMuffled != null) bgmMuffled.volume = 0f;
+        }
     }
 }

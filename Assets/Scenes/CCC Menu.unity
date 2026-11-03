@@ -6813,7 +6813,6 @@ GameObject:
   - component: {fileID: 763631228}
   - component: {fileID: 763631231}
   - component: {fileID: 763631230}
-  - component: {fileID: 763631232}
   m_Layer: 3
   m_Name: BackgroundLayer1
   m_TagString: Untagged
@@ -6878,19 +6877,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 763631227}
   m_CullTransparentMesh: 1
---- !u!114 &763631232
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 763631227}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45c7fefa99ef1a04d8451fe180e19901, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ParallaxBackground
-  parallaxEffectMultiplier: 0.05
 --- !u!1 &767637164
 GameObject:
   m_ObjectHideFlags: 0
@@ -13409,7 +13395,6 @@ GameObject:
   - component: {fileID: 1743923827}
   - component: {fileID: 1743923826}
   - component: {fileID: 1743923825}
-  - component: {fileID: 1743923828}
   m_Layer: 3
   m_Name: BackgroundLayer2
   m_TagString: Untagged
@@ -13474,19 +13459,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1743923828
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1743923824}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45c7fefa99ef1a04d8451fe180e19901, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ParallaxBackground
-  parallaxEffectMultiplier: 0.05
 --- !u!1 &1746043578
 GameObject:
   m_ObjectHideFlags: 0

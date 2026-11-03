@@ -13,7 +13,6 @@ public class AudioManager : MonoBehaviour
 
     [Header("Audio Filter")]
     private AudioLowPassFilter bgmLowPassFilter;
-    private bool isGameOverFiltered = false;
 
     void Awake()
     {
@@ -36,10 +35,16 @@ public class AudioManager : MonoBehaviour
         if (sfxAudioSource != null && clip != null)
         {
             float sfxVol = PlayerPrefs.GetFloat("SFXVolume", 0.75f); 
-            sfxAudioSource.pitch = Random.Range(0.95f, 1.05f);
+            #if UNITY_WEBGL && !UNITY_EDITOR
+                sfxAudioSource.pitch = 1.0f;
+            #else
+                sfxAudioSource.pitch = Random.Range(0.95f, 1.05f);
+            #endif
+
             sfxAudioSource.PlayOneShot(clip, sfxVol);
         }
     }
+   
 
     public void TriggerGameOverFilter(bool enable)
     {

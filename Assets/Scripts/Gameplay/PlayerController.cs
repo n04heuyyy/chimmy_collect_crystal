@@ -222,7 +222,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        StartCoroutine(JuiceEffects.DoHitStop(0.08f));
+        StartCoroutine(JuiceEffects.DoHitStop(0.02f));
 
         health -= 20f * Time.deltaTime; // Nyawa berkurang sebanyak 20/detik
         playerSR.color = Color.red; // Selama terkena damage, ubah sprite jadi merah
